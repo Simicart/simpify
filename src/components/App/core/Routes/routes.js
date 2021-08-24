@@ -6,19 +6,20 @@ import Homepage from '../RootComponents/Homepage';
 import Cart from '../RootComponents/Cart';
 import Collection from '../RootComponents/Collection';
 import Product from '../RootComponents/Product';
+import Signin from '../RootComponents/Signin'
 
-const Signin = (props) => {
-    return (
-        <LazyComponent
-            component={() =>
-                import(
-                    /* webpackChunkName: "Singin" */ 'src/components/App/core/RootComponents/Signin'
-                )
-            }
-            {...props}
-        />
-    );
-};
+// const Signin = (props) => {
+//     return (
+//         <LazyComponent
+//             component={() =>
+//                 import(
+//                     /* webpackChunkName: "Singin" */ 'src/components/App/core/RootComponents/Signin'
+//                 )
+//             }
+//             {...props}
+//         />
+//     );
+// };
 
 export const useScrollTopOnChange = (watched) => {
     useEffect(() => {
@@ -44,7 +45,7 @@ const Routes = () => {
                     <Route exact path='/'>
                         <Homepage />
                     </Route>
-                    <Route exact path='/signin'>
+                    <Route exact path='/account/login'>
                         <Signin />
                     </Route>
                     <Route exact path='/collections/:id'>

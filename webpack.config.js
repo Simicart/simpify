@@ -20,6 +20,15 @@ module.exports = {
                 exclude: /node_modules/,
                 use: ['babel-loader'],
             },
+            {
+                test: /\.(png|jpe?g|gif)$/i,
+                loader: 'file-loader',
+                options: {
+                    name(resourcePath, resourceQuery) {
+                        return '[contenthash].[ext]';
+                    },
+                },
+            },
         ],
     },
     resolve: {

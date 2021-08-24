@@ -80,7 +80,7 @@ const Homepage = (props) => {
             <br />
             <Link to='/collections/test-collection'>Collection Page</Link>
             <br />
-            <Link to='/signin'>Signin Page</Link>
+            <Link to='/account/login'>Signin Page</Link>
         </>
     );
 };
