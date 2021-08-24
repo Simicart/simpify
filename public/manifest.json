@@ -1,0 +1,15 @@
+{
+  "name": "Simpify",
+  "short_name": "Simpify",
+  "start_url": "/",
+  "theme_color": "#ff6334",
+  "display": "standalone",
+  "background_color": "#fff",
+  "description": "Simpify Store",
+  "icons": [{
+    "src": "/icons/simpify_square_512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }
+  ]
+}

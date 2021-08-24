@@ -1,0 +1,13 @@
+RewriteEngine on
+DirectoryIndex index.html
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . ./index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    <filesMatch ".(css|jpg|jpeg|png|gif|js|ico)$">
+        Header set Cache-Control "max-age=2592000, public"
+    </filesMatch>
+</IfModule>

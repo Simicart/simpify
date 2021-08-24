@@ -1,0 +1,29 @@
+.navigation-wrapper {
+    border-bottom: solid 1px #eaeaea;
+    .header-app-bar {
+        max-width: 1920px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 0;
+    }
+    .header-logo .simpify-logo {
+        cursor: pointer;
+        display: flex;
+    }
+    .right-bar {
+        display: flex;
+        align-items: center;
+    }
+    .right-bar-item,
+    .left-bar-item {
+        text-align: center;
+        font-size: 12px;
+        cursor: pointer;
+        z-index: 50;
+    }
+    .right-bar-item {
+        margin-left: 35px;
+    }
+}

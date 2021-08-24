@@ -1,0 +1,23 @@
+.g-mask {
+    opacity: 0;
+    transition-duration: 192ms;
+    visibility: hidden;
+    background-color: black;
+    cursor: pointer;
+    display: block;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    transition-duration: 192ms;
+    transition-property: opacity, visibility;
+    transition-timing-function: linear;
+    width: 100%;
+    z-index: 2;
+    -webkit-appearance: none;
+    &.active {
+        opacity: 0.5;
+        transition-duration: 224ms;
+        visibility: visible;
+    }
+}

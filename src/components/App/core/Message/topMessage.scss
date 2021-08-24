@@ -1,0 +1,55 @@
+#simipify-top-message {
+    .message {
+        font-size: 12px;
+        line-height: 20px;
+        padding: 8px;
+        border: 1px solid;
+        border-radius: 5px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+    .message .message-content {
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+    .message .msg-icon {
+        width: 25px;
+        height: 25px;
+        margin-top: -3px;
+    }
+    .message strong {
+        margin-left: 8px;
+        margin-right: 4px;
+    }
+    .message-error {
+        color: #fa0a11;
+        border-color: #f90a11;
+        background: #f8e1e4;
+    }
+    .message-success {
+        border-color: #1b7e37;
+        color: #268749;
+        background: #e0ece7;
+    }
+    .message-success strong {
+        color: #0f7d37;
+    }
+    .message-warning {
+        border-color: #f7d127;
+        background: #f8f4e4;
+        color: #333132;
+    }
+    .message .msg-text {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .msg-close {
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 2px;
+        cursor: pointer;
+    }
+}
