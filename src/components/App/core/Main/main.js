@@ -11,7 +11,7 @@ let hiddenSplash = false;
 
 const App = (props) => {
     const configData = useConfig();
-    
+
     if (configData) {
         if (!hiddenSplash) {
             try {
