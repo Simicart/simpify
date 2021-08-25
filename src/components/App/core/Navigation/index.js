@@ -1,10 +1,11 @@
 import React from 'react';
-import BasketIcon from 'src/components/Icons/Basket';
 import { Link } from 'src/drivers';
 import { useWindowSize } from 'src/drivers/Context';
 import { logoUrl } from 'src/util/Url';
 import LeftMenu from './LeftMenu';
+import MiniCart from './MiniCart';
 import MenuToggle from './menuToggle';
+import MiniCartToggle from './miniCartToggle';
 
 import './navigation.scss';
 
@@ -33,13 +34,12 @@ const Navigation = (props) => {
                         </Link>
                     </div>
                     <div className='right-bar'>
-                        <Link to='/cart' className='right-bar-item'>
-                            <BasketIcon />
-                        </Link>
+                        <MiniCartToggle />
                     </div>
                 </div>
             </div>
             {isPhone ? <LeftMenu /> : ''}
+            <MiniCart />
         </div>
     );
 };

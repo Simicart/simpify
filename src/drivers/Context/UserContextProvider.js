@@ -6,6 +6,7 @@ import React, {
     useMemo,
     useReducer,
 } from 'react';
+import { useCartContext } from './CartContextProvider';
 import { gql, useLazyQuery } from '@apollo/client';
 
 const UserContext = createContext();
@@ -16,9 +17,7 @@ const UserContext = createContext();
  * @property {CurrentUser} currentUser Current user details
  * @property {Error} getDetailsError Get Details call related error
  * @property {Boolean} isGettingDetails Boolean if true indicates that user details are being fetched. False otherwise.
- * @property {Boolean} isResettingPassword Deprecated
  * @property {Boolean} isSignedIn Boolean if true indicates that the user is signed in. False otherwise.
- * @property {Error} resetPasswordError Deprecated
  */
 const initialState = {
     currentUser: null,
@@ -39,7 +38,8 @@ const storage = window.localStorage;
 
 export const UserContextProvider = (props) => {
     const { children } = props;
-
+    // getCartDetails when logged in or init app new
+    const [, { getCartDetails, getCartId, setCartId }] = useCartContext();
     const [userState, dispatchState] = useReducer(userReducer, initialState);
 
     const [
@@ -86,6 +86,7 @@ export const UserContextProvider = (props) => {
                     customerAccessToken: token.accessToken,
                 },
             });
+        else getCartDetails();
     }, [getToken, fetchCustomerData]);
 
     useEffect(() => {
@@ -94,6 +95,17 @@ export const UserContextProvider = (props) => {
                 type: 'set_current_user',
                 value: customerData.customer,
             });
+            if (
+                customerData.customer.lastIncompleteCheckout &&
+                customerData.customer.lastIncompleteCheckout.id
+            ) {
+                const idFromCustomer =
+                    customerData.customer.lastIncompleteCheckout.id;
+                const idFromStorage = getCartId();
+                if (idFromCustomer && idFromCustomer !== idFromStorage)
+                    setCartId(idFromCustomer);
+            }
+            getCartDetails();
         } else {
             const token = getToken();
             if (token && getDetailsError) {
@@ -117,6 +129,7 @@ export const UserContextProvider = (props) => {
             clearToken,
             getUserDetails,
             setToken,
+            getToken,
             signOut,
         },
     ];
@@ -185,6 +198,10 @@ const GET_CUSTOMER = gql`
                 province
                 provinceCode
                 zip
+            }
+            lastIncompleteCheckout {
+                email
+                id
             }
             acceptsMarketing
             phone

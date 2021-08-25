@@ -7,7 +7,8 @@ export const logoUrl = () => {
         dbConfig['app-configs'][0].app_images &&
         dbConfig['app-configs'][0].app_images.logo
     ) {
-        return dbConfig['app-configs'][0].app_images.logo;
+        const logoUrl = dbConfig['app-configs'][0].app_images.logo;
+        return logoUrl.includes('sample') ? '/logo.svg' : logoUrl;
     }
-    return window.SMCONFIGS.logo_url ? window.SMCONFIGS.logo_url : '/logo.svg';
+    return '/logo.svg';
 };

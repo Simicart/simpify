@@ -5,17 +5,20 @@ import { AppContextProvider } from './AppContextProvider';
 import { TopMessageContextProvider } from './TopMessageContextProvider';
 import { ConfigContextProvider } from './ConfigContextProvider';
 import { UserContextProvider } from './UserContextProvider';
+import { CartContextProvider } from './CartContextProvider';
 export { useWindowSize } from './WindowSizeContextProvider';
 export { useApp } from './AppContextProvider';
 export { useTopMessage } from './TopMessageContextProvider';
 export { useConfig } from './ConfigContextProvider';
 export { useUserContext } from './UserContextProvider';
+export { useCartContext } from './CartContextProvider';
 
 const contextProviders = [
     WindowSizeContextProvider,
     AppContextProvider,
     TopMessageContextProvider,
     ConfigContextProvider,
+    CartContextProvider,
     UserContextProvider,
 ];
 

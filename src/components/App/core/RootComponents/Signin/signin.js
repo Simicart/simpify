@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSignin } from 'src/hooks/useSignin';
+import { useSignin } from 'src/hooks/SignIn/useSignin';
 import { Form } from 'informed';
 import TextInput from '../../Form/TextInput';
 import { isRequired } from 'src/util/formValidators';
