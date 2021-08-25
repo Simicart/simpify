@@ -6,20 +6,19 @@ import Homepage from '../RootComponents/Homepage';
 import Cart from '../RootComponents/Cart';
 import Collection from '../RootComponents/Collection';
 import Product from '../RootComponents/Product';
-import Signin from '../RootComponents/Signin'
 
-// const Signin = (props) => {
-//     return (
-//         <LazyComponent
-//             component={() =>
-//                 import(
-//                     /* webpackChunkName: "Singin" */ 'src/components/App/core/RootComponents/Signin'
-//                 )
-//             }
-//             {...props}
-//         />
-//     );
-// };
+const Signin = (props) => {
+    return (
+        <LazyComponent
+            component={() =>
+                import(
+                    /* webpackChunkName: "SignIn" */ '../RootComponents/Signin'
+                )
+            }
+            {...props}
+        />
+    );
+};
 
 export const useScrollTopOnChange = (watched) => {
     useEffect(() => {
@@ -36,7 +35,6 @@ export const useScrollTopOnChange = (watched) => {
 const Routes = () => {
     const { pathname } = useLocation();
     useScrollTopOnChange(pathname);
-    console.log(pathname);
 
     return (
         <Suspense fallback={<Loading />}>
