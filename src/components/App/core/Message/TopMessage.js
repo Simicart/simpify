@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import './topMessage.scss';
 import ErrorIcon from 'src/components/Icons/Error';
 import Success from 'src/components/Icons/Success';
