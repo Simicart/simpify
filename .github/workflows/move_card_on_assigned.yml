@@ -1,0 +1,91 @@
+# move card from "todo" to "in progress" if it has assignee(s)
+on:
+    issues:
+        types: [ assigned ]
+
+jobs:
+    check_and_label:
+        name: Move card to doing on assignment
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/github-script@v3
+                with:
+                    github-token: ${{secrets.GITHUB_TOKEN}}
+                    script: |
+                        const help_wanted_label_mark = 'help wanted';
+                        const todo_label_mark = 'confirmed'
+                        const in_progress_label_mark = 'in progress';
+
+
+                        const issue = context.payload.issue;
+
+                        const issue_url = issue.url;
+                        const assignees = issue.assignees;
+                        const labels = issue.labels;
+                        const haveHelpWantedLabel = labels.reduce((acc, cur) => (acc || (cur.name === help_wanted_label_mark)), false);
+
+                        const todo_column_id = 15663135;
+                        const doing_column_id = 15663136;
+
+
+                        // fetch all cards in todo
+                        const res = await github.projects.listCards({
+                        	column_id: todo_column_id,
+                        });
+
+                        const todo_cards = res.data;
+
+                        const find = (arr, f) => {
+                        	if (!arr) {
+                        		return null;
+                        	}
+                        	const filteredValue = arr.filter(x => f(x));
+                        	if (filteredValue && filteredValue.length > 0) {
+                        		return filteredValue[0];
+                        	}
+                        	return null;
+                        };
+
+                        //then filter by content_url
+                        if (todo_cards) {
+                        	console.log('got column');
+                        	console.log(todo_cards);
+
+                        	const card_matching_issue = find(todo_cards, card => (card['content_url'] === issue_url));
+                        	// if match, move it to doing column
+                        	if (card_matching_issue !== null) {
+                        		console.log('matching');
+                        		const card_id = card_matching_issue.id;
+                        		github.projects.moveCard({
+                        			card_id: card_id,
+                        			position: 'top',
+                        			column_id: doing_column_id,
+                        		});
+
+                                github.issues.removeLabel({
+                                    owner: context.repo.owner,
+                                    repo: context.repo.repo,
+                                    issue_number: context.payload.issue.number,
+                                    name: todo_label_mark,
+                                });
+                                github.issues.addLabels({
+                                    owner: context.repo.owner,
+                                    repo: context.repo.repo,
+                                    issue_number: context.payload.issue.number,
+                                    labels: [in_progress_label_mark],
+                                });
+
+                        		// remove help wanted label
+                        		if (assignees.length > 0 && haveHelpWantedLabel) {
+                        			console.log('removing label');
+                        			github.issues.removeLabel({
+                        				owner: context.repo.owner,
+                        				repo: context.repo.repo,
+                        				issue_number: context.payload.issue.number,
+                        				name: help_wanted_label_mark,
+                        			});
+                        		}
+                        	}
+                        } else {
+                        	console.log('not found');
+                        }

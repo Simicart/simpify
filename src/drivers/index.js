@@ -7,6 +7,6 @@ export {
     useLocation,
     useHistory,
     useParams,
-    useRouteMatch
+    useRouteMatch,
 } from 'react-router-dom';
 export { default as Adapter } from './Adapter';

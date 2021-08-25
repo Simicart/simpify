@@ -4,7 +4,7 @@ import Loading from 'src/components/Loading';
 
 const GlobalLoading = (props) => {
     const [{ isPageLoading }] = useApp();
-    if (isPageLoading)
+    if (isPageLoading) {
         return (
             <div
                 className='simpify-global-loading'
@@ -25,6 +25,7 @@ const GlobalLoading = (props) => {
                 <Loading style={{ width: 50, height: 50 }} />
             </div>
         );
+    }
     return '';
 };
 export default GlobalLoading;

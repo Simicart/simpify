@@ -1,0 +1,161 @@
+# command for self-assign
+# further action with privilege, see https://docs.github.com/en/organizations/managing-access-to-your-organizations-repositories/repository-permission-levels-for-an-organization
+on:
+    issue_comment:
+        types: [ created, edited ]
+
+jobs:
+    issue-commented:
+        name: Self assign issue
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/github-script@v3
+                with:
+                    github-token: ${{secrets.GITHUB_TOKEN}}
+                    script: |
+                        const help_wanted_label_mark = "help wanted";
+                        const in_progress_label_mark = "in progress";
+                        const review_label_mark = "wanting reviews";
+
+                        const todo_label_mark = "confirmed";
+
+                        const doing_column_id = 15663136;
+                        const todo_column_id = 15663135;
+                        const review_column_id = 15663137;
+
+                        const issue = context.payload.issue;
+                        const issue_url = issue.url;
+
+                        const assignees = issue.assignees;
+                        const labels = issue.labels;
+                        const haveHelpWantedLabel = labels.reduce((acc, cur) => (acc || (cur.name === help_wanted_label_mark)), false);
+
+                        const res = await github.projects.listCards({
+                        	column_id: todo_column_id
+                        });
+                        const todo_cards = res.data;
+
+                        const find = (arr, f) => {
+                        	if (!arr) {
+                        		return null;
+                        	}
+                        	const filteredValue = arr.filter(x => f(x));
+                        	if (filteredValue && filteredValue.length > 0) {
+                        		return filteredValue[0];
+                        	}
+                        	return null;
+                        };
+                        const card_matching_issue = find(todo_cards, card => (card["content_url"] === issue_url));
+
+
+                        const comment_content = context.payload.comment.body;
+                        const helping_call = [
+                        	`@I'm working on it`,
+                        	`@I am working on it`,
+                        	`@I'm on it`,
+                        	`@I am on it`,
+                        	`@I'll do it`,
+                        	`@I shall do it`,
+                        	`@I will do it`,
+                        	"@I summon myself to handle this issue",
+                        	"@Sign me up"
+                        ];
+
+                        if (helping_call.some(x => comment_content.toLowerCase().includes(x.toLowerCase()))) {
+                        	console.log("matched");
+                        	github.issues.addAssignees({
+                        		issue_number: context.payload.issue.number,
+                        		owner: context.repo.owner,
+                        		repo: context.repo.repo,
+                        		assignees: context.payload.comment.user.login
+                        	});
+
+                        	github.reactions.createForIssueComment({
+                        		owner: context.repo.owner,
+                        		repo: context.repo.repo,
+                        		comment_id: context.payload.comment.id,
+                        		content: "rocket"
+                        	});
+
+                        	if (haveHelpWantedLabel) {
+                        		console.log("removing label");
+                        		github.issues.removeLabel({
+                        			owner: context.repo.owner,
+                        			repo: context.repo.repo,
+                        			issue_number: context.payload.issue.number,
+                        			name: help_wanted_label_mark
+                        		});
+                        	}
+                        	if (card_matching_issue !== null) {
+                        		const card_id = card_matching_issue.id;
+                        		github.projects.moveCard({
+                        			card_id: card_id,
+                        			position: "top",
+                        			column_id: doing_column_id
+                        		});
+                        		github.issues.removeLabel({
+                        			owner: context.repo.owner,
+                        			repo: context.repo.repo,
+                        			issue_number: context.payload.issue.number,
+                        			name: todo_label_mark
+                        		});
+                        		github.issues.addLabels({
+                        			owner: context.repo.owner,
+                        			repo: context.repo.repo,
+                        			issue_number: context.payload.issue.number,
+                        			labels: [in_progress_label_mark]
+                        		});
+                        	}
+                        }
+                        // TODO: add review comment
+
+                        const linking_command = `@Linking: `;
+                        if (comment_content.toLowerCase().includes(linking_command.toLowerCase())) {
+                        	const regexMatching = /^@Linking: *([\d\w:\/%_\-.]+)$/;
+                        	const sep = comment_content.match(regexMatching);
+
+                        	const res = await github.projects.listCards({
+                        		column_id: doing_column_id
+                        	});
+
+                        	const doing_cards = res.data;
+
+                        	const card_matching_issue = find(doing_cards, card => (card["content_url"] === issue_url));
+
+                        	if (sep && sep.length > 0) {
+                        		const str = sep[0].split(" ")[1];
+                        		const temp = str.split("/");
+                        		const pull_request_id = temp[temp.length - 1];
+
+                        		github.issues.createComment({
+                        			owner: context.repo.owner,
+                        			repo: context.repo.repo,
+                        			issue_number: pull_request_id,
+                        			body: `This issue is linked to ${issue_url}`
+                        		});
+                        	}
+
+                        	if (card_matching_issue !== null) {
+                        		const card_id = card_matching_issue.id;
+                        		github.projects.moveCard({
+                        			card_id: card_id,
+                        			position: "top",
+                        			column_id: review_column_id
+                        		});
+
+                        		github.issues.removeLabel({
+                        			owner: context.repo.owner,
+                        			repo: context.repo.repo,
+                        			issue_number: context.payload.issue.number,
+                        			name: in_progress_label_mark
+                        		});
+
+                        		github.issues.addLabels({
+                        			owner: context.repo.owner,
+                        			repo: context.repo.repo,
+                        			issue_number: context.payload.issue.number,
+                        			labels: [review_label_mark]
+                        		});
+                        	}
+                        }
+

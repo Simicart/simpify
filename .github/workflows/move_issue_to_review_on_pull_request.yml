@@ -1,0 +1,73 @@
+# move issue linked to a new pull request
+on:
+    pull_request:
+        types: [ opened, edited ]
+
+jobs:
+    check_and_label:
+        name: Add and remove "help wanted" label
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/github-script@v3
+                with:
+                    github-token: ${{secrets.GITHUB_TOKEN}}
+                    script: |
+                        const doing_column_id = 15663136;
+                        const review_column_id = 15663137;
+
+                        const help_wanted_label_mark = "help wanted";
+                        const in_progress_label_mark = "in progress";
+                        const review_label_mark = "wanting reviews";
+
+                        const todo_label_mark = "confirmed";
+
+                        const pull_body = context.payload.pull_request.body
+
+                        const matching_issue_link_pattern = /Issue Number: * ([\w\d:\\\/.-]+) */
+                        const targets = pull_body.match(matching_issue_link_pattern)
+                        const targeted_payload =  targets && targets.length >= 2? targets[1].trim() : null
+
+                        if(!(targeted_payload === null || targeted_payload === 'N/A')){
+                            // might be linked
+
+                            //extract issue number
+                            const issue_link_pattern = /^.*\/(\d+)$/
+                            const match_group = targeted_payload.match(issue_link_pattern)
+                            const issue_number = match_group.length > 2 ? match_group[1] : null;
+
+                            // get card in doing that match issue numbers
+                            const res = await github.projects.listCards({
+                                                          column_id: doing_column_id
+                                                        })
+                            const doing_cards = res.data
+
+                            if(doing_cards && issue_number !== null){
+                                const card_matching_issue = doing_cards.find(card => (card['content_url'] === targeted_payload));
+
+                                if (card_matching_issue){
+                                    // move card and change label
+                                    const card_id = card_matching_issue.id;
+
+                                    github.projects.moveCard({
+                                                   			card_id: card_id,
+                                                   			position: "top",
+                                                   			column_id: review_column_id
+                                    });
+
+                                    github.issues.removeLabel({
+                                        owner: context.repo.owner,
+                                        repo: context.repo.repo,
+                                        issue_number: context.payload.issue.number,
+                                        name: in_progress_label_mark
+                                    });
+
+                                    github.issues.addLabels({
+                                        owner: context.repo.owner,
+                                        repo: context.repo.repo,
+                                        issue_number: context.payload.issue.number,
+                                        labels: [review_label_mark]
+                                    });
+
+                                }
+                            }
+                        }
