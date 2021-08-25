@@ -46,8 +46,9 @@ module.exports = {
         historyApiFallback: true,
     },
     output: {
-        filename: '[name].[chunkhash:8].js',
-        chunkFilename: '[name].[chunkhash:8].chunk.js',
+        filename: 'js/[name].[chunkhash:8].js',
+        chunkFilename: 'js/[name].[chunkhash:8].chunk.js',
+        publicPath: '/',
     },
     optimization: {
         splitChunks: {

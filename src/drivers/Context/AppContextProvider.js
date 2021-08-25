@@ -8,7 +8,9 @@ import React, {
 
 const AppContext = createContext();
 /**
- * drawer: {String} - nav|filter|cart|false(bool)
+ * drawer: {String|Boolean} - nav|filter|cart|false(Boolean)
+ * isOnline: {Boolean}
+ * isPageLoading: {Boolean}
  */
 const initialState = { isOnline: true, isPageLoading: false, drawer: false };
 

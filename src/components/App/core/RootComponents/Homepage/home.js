@@ -9,7 +9,7 @@ const Homepage = (props) => {
     const [, { toggleMessage }] = useTopMessage();
     const { formatMessage } = useIntl();
     const [appState, { setLoading, toggleDrawer }] = useApp();
-    console.log(appState);
+    
     return (
         <>
             <FormattedMessage id='Favourites' defaultMessage='Favourites' />
