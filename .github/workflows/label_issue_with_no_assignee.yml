@@ -1,0 +1,78 @@
+# add "help wanted" label for no-assignee issue and remove if have
+on:
+    project_card:
+        types: [ created, moved ]
+
+jobs:
+    check_and_label:
+        name: Add and remove "help wanted" label
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/github-script@v3
+                with:
+                    github-token: ${{secrets.GITHUB_TOKEN}}
+                    script: |
+                        const todo_column_id = 15663135;
+                        const done_column_id = 15663139;
+                        const help_wanted_label_mark = 'help wanted';
+                        console.log(context.payload);
+
+                        const column_url = context.payload.project_card.column_url;
+                        const column_splitter = column_url.split('/');
+                        const column_id = Number.parseInt(column_splitter[column_splitter.length - 1]);
+
+                        const linked_issue = context.payload.project_card.content_url;
+
+                        let issue_id = null;
+
+                        if (linked_issue) {
+                        	console.log(linked_issue);
+                        	const splitter = linked_issue.split('/');
+                        	issue_id = splitter.length > 0 ? Number.parseInt(splitter[splitter.length - 1]) : null;
+                        }
+
+                        if (issue_id !== null) {
+                        	console.log(issue_id);
+                        	const res = await github.issues.get({
+                        		owner: context.repo.owner,
+                        		repo: context.repo.repo,
+                        		issue_number: issue_id,
+                        	});
+
+                        	const issue = res.data;
+                        	const assignees = issue.assignees;
+                        	const labels = issue.labels
+                        	const haveHelpWantedLabel = labels.reduce((acc, cur)=> (acc || ( cur.name === help_wanted_label_mark)), false)
+
+                        	if (column_id === todo_column_id) {
+                        		// add if in todo and have no assignees and no label yet
+                        		if (assignees.length === 0 && !haveHelpWantedLabel) {
+                        			github.issues.addLabels({
+                        				owner: context.repo.owner,
+                        				repo: context.repo.repo,
+                        				issue_number: context.payload.issue.number,
+                        				labels: [help_wanted_label_mark],
+                        			});
+                        		}
+                        	} else {
+                        		// remove if have assignee(s) and not in todo and have label
+                        		if ( haveHelpWantedLabel) {
+                        			console.log('removing');
+                        			github.issues.removeLabel({
+                        				owner: context.repo.owner,
+                        				repo: context.repo.repo,
+                        				issue_number: context.payload.issue.number,
+                        				name: help_wanted_label_mark,
+                        			});
+                        		}
+                                if( column_id === done_column_id){
+                                    github.issues.update({
+                                          owner: context.repo.owner,
+                                          repo: context.repo.repo,
+                                          issue_number: context.payload.issue.number,
+                                          state: 'closed'
+                                        })
+                                }
+
+                        	}
+                        }

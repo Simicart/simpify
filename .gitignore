@@ -1,2 +1,7 @@
 node_modules
 dist
+.idea
+/log
+/dist
+yarn-error.log
+.env

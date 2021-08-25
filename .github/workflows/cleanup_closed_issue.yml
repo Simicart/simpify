@@ -1,0 +1,69 @@
+on:
+    issues:
+        types: [closed]
+
+jobs:
+    cleanup:
+        name: Cleanup closed issue
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/github-script@v3
+                with:
+                    github-token: ${{secrets.GITHUB_TOKEN}}
+                    script: |
+                        const issue = context.payload.issue;
+                        const issue_url = issue.url;
+                        const issue_id = issue.number
+                        const review_column_id = 15663137;
+                        const complete_column_id = 15663139;
+                        const labels = issue.labels.map(x => x.name);
+
+                        const res = await github.projects.listCards({
+                            column_id: review_column_id
+                        });
+                        const review_cards = res.data;
+
+                        const find = (arr, f) => {
+                            if (!arr) {
+                                return null;
+                            }
+                            const filteredValue = arr.filter(x => f(x));
+                            if (filteredValue && filteredValue.length > 0) {
+                                return filteredValue[0];
+                            }
+                            return null;
+                        };
+
+                        const not_allowed_labels = ['confirmed', 'help wanted', 'in progress'];
+                        const not_target_labels = ['wont-fix', 'duplicate'];
+
+
+                        labels.forEach(l =>{
+                            if(not_allowed_labels.includes(l)){
+                                github.issues.removeLabel({
+                                    owner: context.repo.owner,
+                                    repo: context.repo.repo,
+                                    issue_number: context.payload.issue.number,
+                                    name: l
+                                });
+                            }
+                        })
+
+                        const card_matching_issue = find(review_cards, card => (card["content_url"] === issue_url));
+
+                        // maybe this is not needed
+                        const shouldMoveToDone = labels.reduce((acc, cur)=>{
+                            return acc && !not_target_labels.includes(cur)
+                        }, true)
+
+                        if (card_matching_issue !== null && shouldMoveToDone) {
+                            const card_id = card_matching_issue.id;
+                            github.projects.moveCard({
+                                card_id: card_id,
+                                position: "top",
+                                column_id: complete_column_id
+                            });
+                        }
+
+
+
