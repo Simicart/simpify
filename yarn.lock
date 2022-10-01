@@ -4333,10 +4333,10 @@ inflight@^1.0.4:
     once "^1.3.0"
     wrappy "1"
 
-informed@~3.27.0:
-  version "3.27.0"
-  resolved "https://registry.yarnpkg.com/informed/-/informed-3.27.0.tgz#ecf17b11f978bd28907018ca958fab85c2e780ef"
-  integrity sha512-GVlNvtDtZSrObdluWOWelyrLnC0WY2YGBHY5/fxA6XiA4yfFcdXD/NOlvLFQpWQxr15pEKXLN/ypjGeshtxcpg==
+informed@~4.32.0:
+  version "4.32.0"
+  resolved "https://registry.yarnpkg.com/informed/-/informed-4.32.0.tgz#08b1874a3a5d4c89213868c4d0af3e1987be266b"
+  integrity sha512-Y1gka1JFCKIi+3idVPHWmIusiGN+4/hwwEDqtkkW49cpos/fR9a2vjIBwH3T4eW/alHt8AfIWsa3D8PMHp20JQ==
 
 inherits@2, inherits@2.0.4, inherits@^2.0.1, inherits@^2.0.3, inherits@~2.0.3:
   version "2.0.4"
