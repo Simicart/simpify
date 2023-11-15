@@ -26,7 +26,6 @@ const VariantFragment = gql`
     fragment VariantFragment on ProductVariant {
         id
         title
-        price
         priceV2 {
             amount
             currencyCode
@@ -52,7 +51,6 @@ const VariantFragment = gql`
         weight
         available: availableForSale
         sku
-        compareAtPrice
         compareAtPriceV2 {
             amount
             currencyCode
@@ -148,7 +146,6 @@ export const CheckoutFragment = gql`
         ready
         requiresShipping
         note
-        paymentDue
         paymentDueV2 {
             amount
             currencyCode
@@ -167,12 +164,10 @@ export const CheckoutFragment = gql`
             amount
             currencyCode
         }
-        subtotalPrice
         subtotalPriceV2 {
             amount
             currencyCode
         }
-        totalPrice
         totalPriceV2 {
             amount
             currencyCode
@@ -201,7 +196,6 @@ export const CheckoutFragment = gql`
         }
         shippingLine {
             handle
-            price
             priceV2 {
                 amount
                 currencyCode
@@ -216,12 +210,10 @@ export const CheckoutFragment = gql`
             id
             processedAt
             orderNumber
-            subtotalPrice
             subtotalPriceV2 {
                 amount
                 currencyCode
             }
-            totalShippingPrice
             totalShippingPriceV2 {
                 amount
                 currencyCode
@@ -231,7 +223,6 @@ export const CheckoutFragment = gql`
                 amount
                 currencyCode
             }
-            totalPrice
             totalPriceV2 {
                 amount
                 currencyCode
